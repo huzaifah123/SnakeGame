@@ -1,7 +1,6 @@
 ﻿#include <iostream>
 #include <conio.h>
-
-
+#include <windows.h>
 using namespace std;
 bool gameOver;
 const int width = 20;
@@ -9,9 +8,8 @@ const int height = 20;
 int x, y, fruitX, fruitY, score;
 int tailX[100], tailY[100];
 int nTail;
-enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
-eDirection dir;
-
+enum eDirecton { STOP = 0, LEFT, RIGHT, UP, DOWN };
+eDirecton dir;
 void Setup()
 {
 	gameOver = false;
@@ -24,8 +22,8 @@ void Setup()
 }
 void Draw()
 {
-	system("cls");
-	for (int i = 0; i < width+2; i++)
+	system("cls"); //system("clear");
+	for (int i = 0; i < width + 2; i++)
 		cout << "#";
 	cout << endl;
 
@@ -36,34 +34,35 @@ void Draw()
 			if (j == 0)
 				cout << "#";
 			if (i == y && j == x)
-				cout << "0";
-			else if (i == fruitY && fruitX)
+				cout << "O";
+			else if (i == fruitY && j == fruitX)
 				cout << "F";
 			else
 			{
+				bool print = false;
 				for (int k = 0; k < nTail; k++)
 				{
 					if (tailX[k] == j && tailY[k] == i)
 					{
-						cout << "0";
+						cout << "o";
+						print = true;
 					}
 				}
-				cout << "";
+				if (!print)
+					cout << " ";
 			}
 
-				cout << " ";
 
 			if (j == width - 1)
-					cout << "#";
+				cout << "#";
 		}
 		cout << endl;
 	}
 
 	for (int i = 0; i < width + 2; i++)
 		cout << "#";
-		cout << endl;
-		cout << "Score:" << score << endl;
-
+	cout << endl;
+	cout << "Score:" << score << endl;
 }
 void Input()
 {
@@ -72,20 +71,20 @@ void Input()
 		switch (_getch())
 		{
 		case 'a':
-				dir = LEFT;
-				break;
+			dir = LEFT;
+			break;
 		case 'd':
-			    dir = RIGHT;
-			    break;
+			dir = RIGHT;
+			break;
 		case 'w':
-			    dir = UP;
-			    break;
+			dir = UP;
+			break;
 		case 's':
-			    dir = DOWN;
-			    break;
+			dir = DOWN;
+			break;
 		case 'x':
-			    gameOver = true;
-			    break;
+			gameOver = true;
+			break;
 		}
 	}
 }
@@ -94,6 +93,8 @@ void Logic()
 	int prevX = tailX[0];
 	int prevY = tailY[0];
 	int prev2X, prev2Y;
+	tailX[0] = x;
+	tailY[0] = y;
 	for (int i = 1; i < nTail; i++)
 	{
 		prev2X = tailX[i];
@@ -120,18 +121,23 @@ void Logic()
 	default:
 		break;
 	}
-	if(x > width || x < 0 || y > height || y < 0)
-		gameOver = true;
+	//if (x > width || x < 0 || y > height || y < 0)
+	//  gameOver = true;
+	if (x >= width) x = 0; else if (x < 0) x = width - 1;
+	if (y >= height) y = 0; else if (y < 0) y = height - 1;
+
+	for (int i = 0; i < nTail; i++)
+		if (tailX[i] == x && tailY[i] == y)
+			gameOver = true;
+
 	if (x == fruitX && y == fruitY)
-	{	
-		
+	{
 		score += 10;
 		fruitX = rand() % width;
 		fruitY = rand() % height;
 		nTail++;
 	}
 }
-
 int main()
 {
 	Setup();
@@ -140,8 +146,7 @@ int main()
 		Draw();
 		Input();
 		Logic();
-		//Sleep(10); sleep(10);
+		Sleep(20); //sleep(10);
 	}
-
 	return 0;
 }

@@ -1,11 +1,15 @@
 ﻿#include <iostream>
+#include <conio.h>
+
 
 using namespace std;
 bool gameOver;
 const int width = 20;
 const int height = 20;
 int x, y, fruitX, fruitY, score;
-enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWM };
+int tailX[100], tailY[100];
+int nTail;
+enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
 eDirection dir;
 
 void Setup()
@@ -31,27 +35,101 @@ void Draw()
 		{
 			if (j == 0)
 				cout << "#";
+			if (i == y && j == x)
+				cout << "0";
+			else if (i == fruitY && fruitX)
+				cout << "F";
+			else
+			{
+				for (int k = 0; k < nTail; k++)
+				{
+					if (tailX[k] == j && tailY[k] == i)
+					{
+						cout << "0";
+					}
+				}
+				cout << "";
+			}
 
-			cout << " ";
+				cout << " ";
 
 			if (j == width - 1)
-				cout << "#";
+					cout << "#";
 		}
 		cout << endl;
 	}
 
 	for (int i = 0; i < width + 2; i++)
 		cout << "#";
-	cout << endl;
+		cout << endl;
+		cout << "Score:" << score << endl;
 
 }
 void Input()
 {
-
+	if (_kbhit())
+	{
+		switch (_getch())
+		{
+		case 'a':
+				dir = LEFT;
+				break;
+		case 'd':
+			    dir = RIGHT;
+			    break;
+		case 'w':
+			    dir = UP;
+			    break;
+		case 's':
+			    dir = DOWN;
+			    break;
+		case 'x':
+			    gameOver = true;
+			    break;
+		}
+	}
 }
 void Logic()
 {
-
+	int prevX = tailX[0];
+	int prevY = tailY[0];
+	int prev2X, prev2Y;
+	for (int i = 1; i < nTail; i++)
+	{
+		prev2X = tailX[i];
+		prev2Y = tailY[i];
+		tailX[i] = prevX;
+		tailY[i] = prevY;
+		prevX = prev2X;
+		prevY = prev2Y;
+	}
+	switch (dir)
+	{
+	case LEFT:
+		x--;
+		break;
+	case RIGHT:
+		x++;
+		break;
+	case UP:
+		y--;
+		break;
+	case DOWN:
+		y++;
+		break;
+	default:
+		break;
+	}
+	if(x > width || x < 0 || y > height || y < 0)
+		gameOver = true;
+	if (x == fruitX && y == fruitY)
+	{	
+		
+		score += 10;
+		fruitX = rand() % width;
+		fruitY = rand() % height;
+		nTail++;
+	}
 }
 
 int main()
